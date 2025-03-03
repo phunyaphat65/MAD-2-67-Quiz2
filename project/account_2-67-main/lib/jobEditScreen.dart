@@ -26,8 +26,8 @@ class _JobEditScreenState extends State<JobEditScreen> {
     titleController.text = widget.job.title;
     salaryController.text = widget.job.salary.toString();
     locationController.text = widget.job.location;
-    jobTypeController.text = widget.job.jobType; // กำหนดค่าเริ่มต้นของ jobType
-    requirementsController.text = widget.job.requirements; // กำหนดค่าเริ่มต้นของ requirements
+    jobTypeController.text = widget.job.jobType;
+    requirementsController.text = widget.job.requirements;
   }
 
   @override
@@ -35,8 +35,8 @@ class _JobEditScreenState extends State<JobEditScreen> {
     titleController.dispose();
     salaryController.dispose();
     locationController.dispose();
-    jobTypeController.dispose(); // ต้องทำการ dispose ด้วย
-    requirementsController.dispose(); // ต้องทำการ dispose ด้วย
+    jobTypeController.dispose();
+    requirementsController.dispose();
     super.dispose();
   }
 
@@ -47,13 +47,13 @@ class _JobEditScreenState extends State<JobEditScreen> {
       JobItem updatedJob = JobItem(
         jobID: widget.job.jobID,
         title: titleController.text,
-        company: widget.job.company, // ใช้ค่าเดิมของ company
+        company: widget.job.company,
         location: locationController.text,
         salary: double.parse(salaryController.text),
-        postDate: widget.job.postDate, // ใช้ค่าเดิมของ postDate
-        jobType: jobTypeController.text, // รับค่าจาก jobTypeController
-        requirements: requirementsController.text, // รับค่าจาก requirementsController
-        applicationDeadline: widget.job.applicationDeadline, // ใช้ค่าเดิมของ applicationDeadline
+        postDate: widget.job.postDate,
+        jobType: jobTypeController.text,
+        requirements: requirementsController.text,
+        applicationDeadline: widget.job.applicationDeadline,
       );
 
       provider.updateJob(updatedJob);
@@ -72,79 +72,128 @@ class _JobEditScreenState extends State<JobEditScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'ชื่อตำแหน่งงาน'),
-                autofocus: true,
-                controller: titleController,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return "กรุณาป้อนชื่อตำแหน่งงาน";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'เงินเดือน'),
-                keyboardType: TextInputType.number,
-                controller: salaryController,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return "กรุณาป้อนเงินเดือน";
-                  }
-                  try {
-                    double salary = double.parse(value);
-                    if (salary <= 0) {
-                      return "กรุณาป้อนเงินเดือนที่มากกว่า 0";
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title field
+                _buildTextFormField(
+                  controller: titleController,
+                  labelText: 'ชื่อตำแหน่งงาน',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "กรุณาป้อนชื่อตำแหน่งงาน";
                     }
-                  } catch (e) {
-                    return "กรุณาป้อนเป็นตัวเลขเท่านั้น";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'สถานที่ทำงาน'),
-                controller: locationController,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return "กรุณาป้อนสถานที่ทำงาน";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'ประเภทของงาน'),
-                controller: jobTypeController,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return "กรุณาป้อนประเภทของงาน";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'ข้อกำหนดของงาน'),
-                controller: requirementsController,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return "กรุณาป้อนข้อกำหนดของงาน";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity, // ให้ปุ่มเต็มหน้าจอ
-                child: ElevatedButton(
-                  onPressed: _saveJob,
-                  child: const Text('บันทึกการแก้ไข'),
+                    return null;
+                  },
                 ),
-              ),
-            ],
+                
+                // Salary field
+                _buildTextFormField(
+                  controller: salaryController,
+                  labelText: 'เงินเดือน',
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "กรุณาป้อนเงินเดือน";
+                    }
+                    try {
+                      double salary = double.parse(value);
+                      if (salary <= 0) {
+                        return "กรุณาป้อนเงินเดือนที่มากกว่า 0";
+                      }
+                    } catch (e) {
+                      return "กรุณาป้อนเป็นตัวเลขเท่านั้น";
+                    }
+                    return null;
+                  },
+                ),
+
+                // Location field
+                _buildTextFormField(
+                  controller: locationController,
+                  labelText: 'สถานที่ทำงาน',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "กรุณาป้อนสถานที่ทำงาน";
+                    }
+                    return null;
+                  },
+                ),
+
+                // Job type field
+                _buildTextFormField(
+                  controller: jobTypeController,
+                  labelText: 'ประเภทของงาน',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "กรุณาป้อนประเภทของงาน";
+                    }
+                    return null;
+                  },
+                ),
+
+                // Requirements field
+                _buildTextFormField(
+                  controller: requirementsController,
+                  labelText: 'ข้อกำหนดของงาน',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "กรุณาป้อนข้อกำหนดของงาน";
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 20),
+
+                // Save button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saveJob,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('บันทึกการแก้ไข'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  // Custom TextFormField to reduce repetition
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String labelText,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+        validator: validator,
       ),
     );
   }

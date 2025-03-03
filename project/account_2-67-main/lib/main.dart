@@ -1,16 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';   
 import 'package:provider/provider.dart';
 import 'model/jobItem.dart';
 import 'provider/jobProvider.dart';
-import 'jobFormScreen.dart';
+import 'jobFormScreen.dart';  // เพิ่มการนำเข้า JobFormScreen
 import 'jobEditScreen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const JobApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class JobApp extends StatelessWidget {
+  const JobApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
         })
       ],
       child: MaterialApp(
-        title: 'Job Management',
+        title: 'Job App',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 47, 47, 47)),
           useMaterial3: true,
           textTheme: const TextTheme(
             displayLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const MyHomePage(title: 'ประกาศรับสมัครงาน'),
+        home: const MyHomePage(title: 'ประกาศรับสมัครงาน'), // ชื่อที่แสดงใน AppBar
       ),
     );
   }
@@ -56,6 +56,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool _isButtonExpanded = false;
+
   @override
   void initState() {
     super.initState();
@@ -67,33 +69,25 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const JobFormScreen();
-              }));
-            },
-          ),
-        ],
       ),
-      body: Consumer<JobProvider>(
-        builder: (context, provider, child) {
-          int itemCount = provider.jobs.length;
-          if (itemCount == 0) {
-            return const Center(
-              child: Text(
-                'ไม่มีงานที่บันทึก',
-                style: TextStyle(fontSize: 24),
-              ),
-            );
-          } else {
-            return ListView.builder(
-              itemCount: itemCount,
-              itemBuilder: (context, index) {
-                JobItem data = provider.jobs[index];
-                return Dismissible(
+      body: Consumer<JobProvider>(builder: (context, provider, child) {
+        int itemCount = provider.jobs.length;
+        if (itemCount == 0) {
+          return const Center(
+            child: Text(
+              'ไม่มีงานที่บันทึก',
+              style: TextStyle(fontSize: 24),
+            ),
+          );
+        } else {
+          return ListView.builder(
+            itemCount: itemCount,
+            itemBuilder: (context, index) {
+              JobItem data = provider.jobs[index];
+              return AnimatedOpacity(
+                opacity: 1.0,
+                duration: const Duration(milliseconds: 500),
+                child: Dismissible(
                   key: Key(data.jobID.toString()),
                   direction: DismissDirection.horizontal,
                   onDismissed: (direction) {
@@ -114,9 +108,22 @@ class _MyHomePageState extends State<MyHomePage> {
                         data.title,
                         style: Theme.of(context).textTheme.displayLarge,
                       ),
-                      subtitle: Text(
-                        'เงินเดือน: ${data.salary} บาท\nสถานที่: ${data.location}',
-                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'เงินเดือน: ${data.salary} บาท',
+                            style: const TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                          Text(
+                            'สถานที่: ${data.location}',
+                            style: const TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                          Text(
+                            'ประเภทงาน: ${data.jobType}',
+                            style: const TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ],
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -139,11 +146,29 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
-                );
-              },
-            );
-          }
-        },
+                ),
+              );
+            },
+          );
+        }
+      }),
+      floatingActionButton: Align(
+        alignment: Alignment.bottomRight, // ตั้งปุ่มให้ชิดมุมขวา
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const JobFormScreen(); // นำทางไปยังหน้าเพิ่มงาน
+              }));
+            },
+            backgroundColor: Colors.deepPurpleAccent,
+            child: const Icon(
+              Icons.add,
+              size: 30,
+            ),
+          ),
+        ),
       ),
     );
   }
