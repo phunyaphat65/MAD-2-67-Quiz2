@@ -1,0 +1,2 @@
+D:/65313129/MAD-2-67-Quiz2/project/account_2-67-main/android/app/.cxx/Debug/4k1h4m1c/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/65313129/MAD-2-67-Quiz2/project/account_2-67-main/android/app/.cxx/Debug/4k1h4m1c/armeabi-v7a/CMakeFiles/rebuild_cache.dir
